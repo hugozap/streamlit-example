@@ -40,17 +40,17 @@ if uploaded_files is not None:
 
 # Display logic for Streamlit
 if not excel_data.empty:
-    st.title('Updated Excel Data')
+    st.title('Excel cargado')
     st.write(excel_data)
 else:
-    st.warning("No Excel file uploaded or no valid data to display after processing.")
+    st.warning("Excel no válido.")
 
 if not errors_df.empty:
-    st.error("Errors Detected:")
+    st.error("Errore:")
     st.write(errors_df)
 
 if not returns_df.empty:
-    st.title("Returns Table")
+    st.title("Devoluciones")
     st.write(returns_df)
 else:
-    st.info("No returns found.")
+    st.info("No se encontraron devoluciones")
