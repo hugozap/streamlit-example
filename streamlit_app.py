@@ -6,7 +6,6 @@ import streamlit as st
 
 uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
 
-import pandas as pd
 
 # Assuming 'excel_data' is your DataFrame loaded from the Excel file
 if uploaded_files is not None:
@@ -16,35 +15,36 @@ if uploaded_files is not None:
     # Initialize an empty DataFrame for errors
     errors = pd.DataFrame(columns=['item', 'error_message'])
 
-    # Find all "302" returns
-    returns = excel_data[excel_data['tipo'] == '302']
+    # Separate DataFrame for returns
+    returns_df = excel_data[excel_data['tipo'] == '302'].copy()
 
-    # Track rows to be removed (both returns and their corresponding transactions, if found)
+    # Track rows to be removed from the main DataFrame
     rows_to_drop = set()
 
-    for _, return_row in returns.iterrows():
-        # Check for a corresponding transaction
+    for _, return_row in returns_df.iterrows():
+        # Attempt to find a corresponding transaction
         transactions = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')]
         
         if transactions.empty:
-            # Log error if no corresponding transaction is found
+            # If no transaction is found, log an error
             errors = errors.append({'item': return_row['item'], 'error_message': 'No corresponding transaction found for return'}, ignore_index=True)
         else:
-            # Get the index of the first matching transaction
+            # If a transaction is found, mark the first one for removal
             transaction_index = transactions.index[0]
             rows_to_drop.add(transaction_index)
 
-        # Always add the return row to the rows to be dropped
+        # Mark the return row for removal from the main DataFrame
         rows_to_drop.add(return_row.name)
 
-    # Drop both returns and transactions
+    # Remove the marked returns and transactions from the main DataFrame
     excel_data.drop(index=list(rows_to_drop), inplace=True)
 
 else:
     excel_data = pd.DataFrame()
     errors = pd.DataFrame()
+    returns_df = pd.DataFrame()  # Ensure returns_df is defined even if no file is uploaded
 
-# Display updated data and any errors
+# Display the updated data, errors, and the separate returns table
 if len(excel_data) > 0:
     st.title('Updated Excel Data')
     st.write(excel_data)
@@ -54,5 +54,9 @@ else:
 if not errors.empty:
     st.error("Errors Detected:")
     st.write(errors)
+
+if len(returns_df) > 0:
+    st.title("Returns Table")
+    st.write(returns_df)
 else:
-    st.success("No errors detected in returns processing.")
+    st.info("No returns found.")
