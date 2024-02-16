@@ -15,6 +15,6 @@ else:
 # Process and display the data in Streamlit
 if len(excel_data) > 0:
     st.title('Excel Data Processing App')
-    st.write(excel_data.head())  # Adjust the number in head() if you want to display more rows
+    st.write(excel_data)  # Adjust the number in head() if you want to display more rows
 else:
     st.warning("No Excel file uploaded. Please upload a valid XLSX file to continue.")
