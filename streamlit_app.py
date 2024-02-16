@@ -4,6 +4,11 @@ import pandas as pd
 import streamlit as st
 
 
+# Initialize empty DataFrames
+excel_data = pd.DataFrame()
+errors_df = pd.DataFrame()
+returns_df = pd.DataFrame()
+
 uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
 
 
