@@ -38,3 +38,17 @@ st.altair_chart(alt.Chart(df, height=700, width=700)
         color=alt.Color("idx", legend=None, scale=alt.Scale()),
         size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
     ))
+
+uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
+if uploaded_files is not None:
+    excel_data = pd.read_excel(uploaded_files)
+else:
+    excel_data = pd.DataFrame()
+    
+# Process and display the data in Streamlit
+if len(excel_data) > 0:
+    st.title('Excel Data Processing App')
+    st.write(excel_data.head())
+else:
+    st.warning("No Excel file uploaded. Please upload a valid XLSX file to continue.")
+
