@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 
 
+uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
 if uploaded_files is not None:
     excel_data = pd.read_excel(uploaded_files)
     # Add 'llave' column by slicing the first 3 characters of the 'item' column
