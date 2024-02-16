@@ -46,7 +46,7 @@ else:
     st.warning("Excel no válido.")
 
 if not errors_df.empty:
-    st.error("Errore:")
+    st.error("Errores:")
     st.write(errors_df)
 
 if not returns_df.empty:
@@ -54,3 +54,20 @@ if not returns_df.empty:
     st.write(returns_df)
 else:
     st.info("No se encontraron devoluciones")
+
+
+
+# Check if the DataFrame is not empty and 'cod_cco' column exists
+if not excel_data.empty and 'cod_cco' in excel_data.columns:
+    # Get unique values of 'cod_cco'
+    unique_cod_cco = excel_data['cod_cco'].unique()
+
+    for cod_cco in unique_cod_cco:
+        # Filter DataFrame for the current 'cod_cco'
+        filtered_df = excel_data[excel_data['cod_cco'] == cod_cco]
+
+        # Display the filtered DataFrame
+        st.subheader(f"Table for cod_cco: {cod_cco}")
+        st.dataframe(filtered_df)
+else:
+    st.warning("No hay datos disponibles.")
