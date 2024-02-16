@@ -9,27 +9,21 @@ uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
 
 # Assuming 'excel_data' is loaded from the Excel file
 if uploaded_files is not None:
-    excel_data = pd.read_excel(uploaded_files)
-    excel_data['tipo'] = excel_data['tipo'].astype(str)
-    excel_data['item'] = excel_data['item'].astype(str)
-    excel_data['llave'] = excel_data['item'].str[:3]
+# Your existing code to load and preprocess 'excel_data'
 
-    # Identify all returns
-    returns_df = excel_data[excel_data['tipo'] == '302']
+# Initialize an empty list for errors
+errors_list = []
 
-    # Initialize an empty list for errors
-    errors_list = []
+# Find indexes to remove (both returns and one corresponding transaction per return)
+indexes_to_remove = set()
+for index, return_row in returns_df.iterrows():
+    transaction_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
+    if transaction_idx.empty:
+        errors_list.append({'item': return_row['item'], 'error_message': 'No corresponding transaction found for return'})
+    else:
+        indexes_to_remove.add(index)  # Add return index
+        indexes_to_remove.add(transaction_idx[0])  # Add the first transaction index found
 
-    # Find indexes to remove (both returns and one corresponding transaction per return)
-    indexes_to_remove = set(returns_df.index)
-    for index, return_row in returns_df.iterrows():
-        # Attempt to find a corresponding transaction
-        transaction_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
-        if transaction_idx.empty:
-            errors_list.append({'item': return_row['item'], 'error_message': 'No corresponding transaction found for return'})
-        else:
-            # Add the first transaction index found to the list of indexes to remove
-            indexes_to_remove.add(transaction_idx[0])
 
     # Convert the errors list to a DataFrame
     errors_df = pd.DataFrame(errors_list)
