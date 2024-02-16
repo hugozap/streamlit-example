@@ -11,25 +11,25 @@ uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
 if uploaded_files is not None:
 # Your existing code to load and preprocess 'excel_data'
 
-# Initialize an empty list for errors
-errors_list = []
+    # Initialize an empty list for errors
+    errors_list = []
 
-# Find indexes to remove (both returns and one corresponding transaction per return)
-indexes_to_remove = set()
-for index, return_row in returns_df.iterrows():
-    transaction_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
-    if transaction_idx.empty:
-        errors_list.append({'item': return_row['item'], 'error_message': 'No corresponding transaction found for return'})
-    else:
-        indexes_to_remove.add(index)  # Add return index
-        indexes_to_remove.add(transaction_idx[0])  # Add the first transaction index found
+    # Find indexes to remove (both returns and one corresponding transaction per return)
+    indexes_to_remove = set()
+    for index, return_row in returns_df.iterrows():
+        transaction_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
+        if transaction_idx.empty:
+            errors_list.append({'item': return_row['item'], 'error_message': 'No corresponding transaction found for return'})
+        else:
+            indexes_to_remove.add(index)  # Add return index
+            indexes_to_remove.add(transaction_idx[0])  # Add the first transaction index found
 
 
-    # Convert the errors list to a DataFrame
-    errors_df = pd.DataFrame(errors_list)
+        # Convert the errors list to a DataFrame
+        errors_df = pd.DataFrame(errors_list)
 
-    # Drop the rows from the main DataFrame
-    excel_data.drop(index=list(indexes_to_remove), inplace=True)
+        # Drop the rows from the main DataFrame
+        excel_data.drop(index=list(indexes_to_remove), inplace=True)
 
 else:
     excel_data = pd.DataFrame()
