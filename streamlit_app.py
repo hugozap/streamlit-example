@@ -17,7 +17,7 @@ if uploaded_files is not None and proveedores_files is not None:
     proveedores_df = pd.read_excel(proveedores_files)
 
     # dejar llave como string
-    proveedores_df['llave'] = proveedores_df[0].astype(str)
+    proveedores_df['llave'] = proveedores_df.iloc[:,0].astype(str)
 
     excel_data['tipo'] = excel_data['tipo'].astype(str)
     excel_data['item'] = excel_data['item'].astype(str)
