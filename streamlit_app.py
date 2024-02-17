@@ -57,8 +57,7 @@ if uploaded_files is not None and proveedores_files is not None:
 
     
 
-# Ajustar el índice y los nombres de las columnas según sea necesario
-resultado.reset_index(inplace=True)
+
 
 
 # Display logic for Streamlit
@@ -102,6 +101,9 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
             'Total Descuento': (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum(),
             'Total a pagar proveedor': x['pre_tot'].sum() - (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum()
         }))
+
+        # Ajustar el índice y los nombres de las columnas según sea necesario
+        grupo_proveedores.reset_index(inplace=True)
 
         st.subheader("Consolidado Proveedores")
         st.dataframe(grupo_proveedores);
