@@ -8,7 +8,6 @@ proveedores_df = pd.DataFrame()
 excel_data = pd.DataFrame()
 errors_df = pd.DataFrame()
 returns_df = pd.DataFrame()
-ventas_con_descuento = pd.DataFrame()
 
 uploaded_files = st.file_uploader("Cargar archivo base", type="xlsx")
 proveedores_files = st.file_uploader("Cargar archivo de proveedores", type="xlsx")
@@ -94,7 +93,7 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
 
         # Unir `excel_data` con `proveedores_df` para tener la información de descuento disponible en las ventas
         ventas_con_descuento = pd.merge(excel_data, proveedores_df, left_on='llave', right_on='llave')
-
+        
         # Calcular el total de ventas, total descuento y el valor después del descuento por proveedor
         grupo_proveedores = ventas_con_descuento.groupby('llave').apply(lambda x: pd.Series({
             'Nombre Proveedor': x['PROVEEDOR'].iloc[0],
@@ -106,19 +105,38 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
         # Ajustar el índice y los nombres de las columnas según sea necesario
         grupo_proveedores.reset_index(inplace=True)
 
-        st.subheader("Consolidado Proveedores")
+        st.subheader(f"Consolidado Proveedores - Centro de Costo {cod_cco}")
         st.dataframe(grupo_proveedores);
 
+        # Filter DataFrame for the current 'cod_cco'
+        df_cod_cco = ventas_con_descuento[ventas_con_descuento['cod_cco'] == cod_cco]
+
+        # Get unique proveedores within this centro de costo
+        unique_proveedores = df_cod_cco['proveedor'].unique()
+
+        for proveedor in unique_proveedores:
+            st.subheader(f"Proveedor {proveedor} - (CC: {cod_cco})")
+            # Filter for the current proveedor within the current centro de costo
+            df_proveedor = df_cod_cco[df_cod_cco['proveedor'] == proveedor]
+
+            # Perform calculations such as total ventas, total descuento, and total a pagar proveedor
+            total_ventas = df_proveedor['pre_tot'].sum()
+            total_descuento = (df_proveedor['pre_tot'] * (df_proveedor['DESCUENTO'] / 100.0)).sum()
+            total_a_pagar = total_ventas - total_descuento
+
+            # Prepare a DataFrame or a dictionary to display the information for the current proveedor
+            data_to_display = {
+                'Nombre Proveedor': [proveedor],
+                'Total Ventas': [total_ventas],
+                'Total Descuento': [total_descuento],
+                'Total a pagar proveedor': [total_a_pagar]
+            }
+            df_display = pd.DataFrame(data_to_display)
+
+            # Display the DataFrame for the current proveedor
+            st.dataframe(df_proveedor)
+            st.dataframe(df_display)
 
 else:
     st.warning("No hay datos disponibles.")
-
-
-if not proveedores_df.empty:
-    st.title("Proveedores")
-    st.write(proveedores_df)
-
-if not ventas_con_descuento.empty:
-    st.title("Ventas con descuento")
-    st.write(ventas_con_descuento)
 
