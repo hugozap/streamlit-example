@@ -41,11 +41,11 @@ if uploaded_files is not None:
             for i in range(return_row['cantidad']):
                 indexes_to_remove.add(transactions_idx[i])
 
-# Convert the errors list to a DataFrame for display
-errors_df = pd.DataFrame(errors_list)
+    # Convert the errors list to a DataFrame for display
+    errors_df = pd.DataFrame(errors_list)
 
-# Drop the rows from the main DataFrame based on the indexes to remove
-excel_data.drop(index=list(indexes_to_remove), inplace=True)
+    # Drop the rows from the main DataFrame based on the indexes to remove
+    excel_data.drop(index=list(indexes_to_remove), inplace=True)
 
 # Display logic for Streamlit
 if not excel_data.empty:
