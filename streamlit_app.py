@@ -24,22 +24,22 @@ if uploaded_files is not None:
 
     # Logic to find indexes to remove and handle errors
     # Logic to find indexes to remove and handle errors
-indexes_to_remove = set()
-for index, return_row in returns_df.iterrows():
-    indexes_to_remove.add(index);
-    # Find all transactions that correspond to the return item and are not returns themselves
-    transactions_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
-    
-    if transactions_idx.empty:
-        errors_list.append({'item': return_row['item'], 'error_message': 'No se encontró venta correspondiente a la devolución'})
-    elif len(transactions_idx) < return_row['cantidad']:
-        # Not enough transactions to remove as indicated by the 'cantidad'
-        errors_list.append({'item': return_row['item'], 'error_message': f"Hay más ventas que devoluciones: {return_row['cantidad']}, Found: {len(transactions_idx)}"})
-    else:
-        indexes_to_remove.add(index)  # Add the return index itself to be removed
-        # Add the specified number of transaction indexes starting from the earliest found
-        for i in range(return_row['cantidad']):
-            indexes_to_remove.add(transactions_idx[i])
+    indexes_to_remove = set()
+    for index, return_row in returns_df.iterrows():
+        indexes_to_remove.add(index);
+        # Find all transactions that correspond to the return item and are not returns themselves
+        transactions_idx = excel_data[(excel_data['item'] == return_row['item']) & (excel_data['tipo'] != '302')].index
+        
+        if transactions_idx.empty:
+            errors_list.append({'item': return_row['item'], 'error_message': 'No se encontró venta correspondiente a la devolución'})
+        elif len(transactions_idx) < return_row['cantidad']:
+            # Not enough transactions to remove as indicated by the 'cantidad'
+            errors_list.append({'item': return_row['item'], 'error_message': f"Hay más ventas que devoluciones: {return_row['cantidad']}, Found: {len(transactions_idx)}"})
+        else:
+            indexes_to_remove.add(index)  # Add the return index itself to be removed
+            # Add the specified number of transaction indexes starting from the earliest found
+            for i in range(return_row['cantidad']):
+                indexes_to_remove.add(transactions_idx[i])
 
 # Convert the errors list to a DataFrame for display
 errors_df = pd.DataFrame(errors_list)
