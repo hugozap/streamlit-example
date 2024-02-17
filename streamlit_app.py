@@ -112,12 +112,12 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
         df_cod_cco = ventas_con_descuento[ventas_con_descuento['cod_cco'] == cod_cco]
 
         # Get unique proveedores within this centro de costo
-        unique_proveedores = df_cod_cco['proveedor'].unique()
+        unique_proveedores = df_cod_cco['PROVEEDOR'].unique()
 
         for proveedor in unique_proveedores:
             st.subheader(f"Proveedor {proveedor} - (CC: {cod_cco})")
             # Filter for the current proveedor within the current centro de costo
-            df_proveedor = df_cod_cco[df_cod_cco['proveedor'] == proveedor]
+            df_proveedor = df_cod_cco[df_cod_cco['PROVEEDOR'] == proveedor]
 
             # Perform calculations such as total ventas, total descuento, and total a pagar proveedor
             total_ventas = df_proveedor['pre_tot'].sum()
