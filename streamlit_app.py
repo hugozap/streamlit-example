@@ -8,6 +8,7 @@ proveedores_df = pd.DataFrame()
 excel_data = pd.DataFrame()
 errors_df = pd.DataFrame()
 returns_df = pd.DataFrame()
+ventas_con_descuento = pd.DataFrame()
 
 uploaded_files = st.file_uploader("Cargar archivo base", type="xlsx")
 proveedores_files = st.file_uploader("Cargar archivo de proveedores", type="xlsx")
@@ -54,6 +55,10 @@ if uploaded_files is not None and proveedores_files is not None:
     # Drop the rows from the main DataFrame based on the indexes to remove
     excel_data.drop(index=list(indexes_to_remove), inplace=True)
 
+    # Unir `excel_data` con `proveedores_df` para tener la información de descuento disponible en las ventas
+    ventas_con_descuento = pd.merge(excel_data, proveedores_df, left_on='llave', right_on='llave')
+
+
 # Display logic for Streamlit
 if not excel_data.empty:
     st.title('Excel cargado')
@@ -71,10 +76,6 @@ if not returns_df.empty:
 else:
     st.info("No se encontraron devoluciones")
 
-if not proveedores_df.empty:
-    st.title("Proveedores")
-    st.write(proveedores_df)
-
 
 
 # Check if the DataFrame is not empty and 'cod_cco' column exists
@@ -91,3 +92,13 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
         st.dataframe(filtered_df)
 else:
     st.warning("No hay datos disponibles.")
+
+
+if not proveedores_df.empty:
+    st.title("Proveedores")
+    st.write(proveedores_df)
+
+if not ventas_con_descuento.empty:
+    st.title("Ventas con descuento")
+    st.write(ventas_con_descuento)
+
