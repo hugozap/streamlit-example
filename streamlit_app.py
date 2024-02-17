@@ -55,8 +55,10 @@ if uploaded_files is not None and proveedores_files is not None:
     # Drop the rows from the main DataFrame based on the indexes to remove
     excel_data.drop(index=list(indexes_to_remove), inplace=True)
 
-    # Unir `excel_data` con `proveedores_df` para tener la información de descuento disponible en las ventas
-    ventas_con_descuento = pd.merge(excel_data, proveedores_df, left_on='llave', right_on='llave')
+    
+
+# Ajustar el índice y los nombres de las columnas según sea necesario
+resultado.reset_index(inplace=True)
 
 
 # Display logic for Streamlit
@@ -90,6 +92,21 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
         # Display the filtered DataFrame
         st.subheader(f"Centro de costo: {cod_cco}")
         st.dataframe(filtered_df)
+
+        # Unir `excel_data` con `proveedores_df` para tener la información de descuento disponible en las ventas
+        ventas_con_descuento = pd.merge(excel_data, proveedores_df, left_on='llave', right_on='llave')
+
+        # Calcular el total de ventas, total descuento y el valor después del descuento por proveedor
+        grupo_proveedores = ventas_con_descuento.groupby('llave').apply(lambda x: pd.Series({
+            'Total Ventas': x['pre_tot'].sum(),  # Asume que hay una columna 'monto' en `excel_data` para el monto de la venta
+            'Total Descuento': (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum(),
+            'Total a pagar proveedor': x['pre_tot'].sum() - (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum()
+        }))
+
+        st.subheader("Consolidado Proveedores")
+        st.dataframe(grupo_proveedores);
+
+
 else:
     st.warning("No hay datos disponibles.")
 
