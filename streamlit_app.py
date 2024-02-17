@@ -97,7 +97,7 @@ if not excel_data.empty and 'cod_cco' in excel_data.columns:
 
         # Calcular el total de ventas, total descuento y el valor después del descuento por proveedor
         grupo_proveedores = ventas_con_descuento.groupby('llave').apply(lambda x: pd.Series({
-            'Proveedor': x['PROVEEDOR'],
+            'Nombre Proveedor': x['PROVEEDOR'].iloc[0],
             'Total Ventas': x['pre_tot'].sum(),  # Asume que hay una columna 'monto' en `excel_data` para el monto de la venta
             'Total Descuento': (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum(),
             'Total a pagar proveedor': x['pre_tot'].sum() - (x['pre_tot'] * (x['DESCUENTO']/100.0)).sum()
