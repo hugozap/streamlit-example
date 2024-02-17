@@ -4,14 +4,21 @@ import pandas as pd
 import streamlit as st
 
 # Initialize empty DataFrames
+proveedores_df = pd.DataFrame()
 excel_data = pd.DataFrame()
 errors_df = pd.DataFrame()
 returns_df = pd.DataFrame()
 
-uploaded_files = st.file_uploader("Upload an Excel File", type="xlsx")
+uploaded_files = st.file_uploader("Cargar archivo base", type="xlsx")
+proveedores_files = st.file_uploader("Cargar archivo de proveedores", type="xlsx")
 
-if uploaded_files is not None:
+if uploaded_files is not None and proveedores_files is not None:
     excel_data = pd.read_excel(uploaded_files)
+    proveedores_df = pd.read_excel(proveedores_files)
+
+    # dejar llave como string
+    proveedores_df[0] = proveedores_df[0].astype(str)
+
     excel_data['tipo'] = excel_data['tipo'].astype(str)
     excel_data['item'] = excel_data['item'].astype(str)
     excel_data['llave'] = excel_data['item'].str[:3]
@@ -63,6 +70,10 @@ if not returns_df.empty:
     st.write(returns_df)
 else:
     st.info("No se encontraron devoluciones")
+
+if not proveedores_df.empty:
+    st.title("Proveedores")
+    st.write(proveedores_df)
 
 
 
